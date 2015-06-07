@@ -4,7 +4,7 @@
 **                                 =========                                  **
 **                                                                            **
 **          Macros for ANSI escape sequences in a single header file          **
-**                       Version: 0.1.0.014 (20150607)                        **
+**                       Version: 0.1.1.025 (20150607)                        **
 **                                File: test.c                                **
 **                                                                            **
 **               For more information about the project, visit                **
@@ -36,6 +36,8 @@
 #include <stdlib.h> /*
     const : EXIT_SUCCESS
 */
+
+// #define MONOCORN
 
 /* Include rainicorn headers */
 #include "rainicorn.h" /*

@@ -5,7 +5,7 @@
 ##                                 =========                                  ##
 ##                                                                            ##
 ##          Macros for ANSI escape sequences in a single header file          ##
-##                       Version: 0.1.0.006 (20150607)                        ##
+##                       Version: 0.1.1.025 (20150607)                        ##
 ##                             File: maintain.py                              ##
 ##                                                                            ##
 ##               For more information about the project, visit                ##
