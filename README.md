@@ -1,15 +1,19 @@
-![rainicorn](logo.png?raw=true "logo")
+![rainicorn](img/logo.png?raw=true "logo")
 
 - [What is `rainicorn`?](#what-is-rainicorn)
 - [What does the name `rainicorn` mean?](#what-does-the-name-rainicorn-mean)
 - [How should I use it?](#how-should-i-use-it)
 - [Is there an "OFF" switch?](#is-there-an-off-switch)
+- [License](#license)
+
+
 
 What is `rainicorn`?
 --------------------
 
-It is a collection of macros for formatted (colored and styled) outputs via the
-ANSI escape sequences in a single header file.
+It is a header only *library*. A collection of macros to create formatted
+outputs &mdash; that is, colored and styled &mdash; using the [ANSI escape
+sequences](https://en.wikipedia.org/wiki/ANSI_escape_code).
 
 
 
@@ -28,79 +32,131 @@ How should I use it?
 First, include the header file:
 
 ```C
-#include "rainicorn.h"
+#include <rainicorn/rainicorn.h>
 ```
 
 There are three types of values you can change. The `F` (foreground), the `B`
-(background) and the `S` (style). We can set and remove these values with the
-given macros. For example let's only change the foregrounds:
+(background) and the `S` (style). These values can be set and removed
+individually or with combinations of each other via the predefined macros. For
+example let's change only the foregrounds:
 
 ```C
-printf(rc_F(rc_RED, "Hello, ")
-       rc_F(rc_YELLOW, "World!")
-       rc_RESET("\n"));
+puts("\""
+     RC_F(RC_RED, "Hello, ")
+     RC_F(RC_YELLOW, "World!")
+     RC_XFBS("\"\n"));
 ```
 
-Notice, that there are now `,` between the macro calls, as they will evaluate to
-string literals, which will be concatenated during the translation.
+> **NOTE:** There are no commas (`,`) after the macro calls. This is because
+> these macros will evaluate to string literals, which are going to be
+> concatenated during the translation.
 
-Here is another example, where we set `F` to green, and then leave it like that
-and set `B` to white:
+The last macro, `RC_XFBS`, is the *ultimate* reset, as it sets the foreground
+and background colors and the style as well to their original default values.
+
+The previous example will produce the following output:
+
+![doc-01](img/doc-01.png?raw=true "doc-01-output")
+
+In the next example, we set `F` to blue for the entire text, but also we set
+`B` to white for the second word:
 
 ```C
-printf(rc_F(rc_GREEN, "Hello, ")
-       rc_B(rc_WHITE, "World!")
-       rc_RESET("\n"));
+puts("\""
+     RC_F(RC_BLUE, "Hello, ")
+     RC_B(RC_WHITE, "World!")
+     RC_XFBS("\"\n"));
 ```
 
-If we want to remove the green `F` color from `"World!"` we should do:
+![doc-02](img/doc-02.png?raw=true "doc-02-output")
+
+If we want to remove the green `F` color from `"World!"` in the next example,
+we can do it in two ways:
 
 ```C
-printf(rc_F(rc_GREEN, "Hello, ")
-       rc_FB(rc_DEF_FG, rc_YELLOW, "World!")
-       rc_RESET("\n"));
+/* Set the F back to default and set the background to magenta */
+puts("\""
+     RC_F(RC_GREEN, "Hello, ")
+     RC_FB(RC_DEFAULT, RC_MAGENTA, "World!")
+     RC_XFBS("\"\n"));
+
+/* Remove the foreground color and set the background color to magenta */
+puts("\""
+     RC_F(RC_GREEN, "Hello, ")
+     RC_XF(RC_B(RC_MAGENTA, "World!"))
+     RC_XFBS("\"\n"));
 ```
 
-But, of course we can also change it to cyan as well:
+The output for both is going to be:
+
+![doc-03](img/doc-03.png?raw=true "doc-03-output")
+
+> **NOTE:** Though the two are the same, the former is creating a single
+> control sequence, while the latter will produce two. (The performance
+> difference is probably neglectable, and since both are correct, use the one
+> which is easier to read/understand for you.)
+
+Sometimes removing a particular value is the right move! For example if you want
+to colorize and make bold the first third of the next line; and then you want to
+have bold but uncolored text for the second third; and last, you want letters
+without color or style for the end, then you would do something like this:
 
 ```C
-printf(rc_F(rc_GREEN, "Hello, ")
-       rc_FB(rc_CYAN, rc_YELLOW, "World!")
-       rc_RESET("\n"));
+puts("\""
+     RC_FS(RC_CYAN, RC_BOLD, "Hello, ")
+     RC_XF("World! ")
+     RC_XFBS("Good bye!\"\n"));
 ```
 
-We don't have to overwrite a value, if we want only to remove a property, we
-should use the `R` prefixed versions of the macros:
+![doc-04](img/doc-04.png?raw=true "doc-04-output")
 
-```C
-printf(rc_F(rc_GREEN, "Hello, ")
-       rc_RF("World!")
-       rc_RESET("\n"));
-```
-
-For all the available options, you should read the header file, and for more
-examples, you should check the `test.c` file!
+*For all the available options and values, you should consult the header files!*
 
 
 
 Is there an "OFF" switch?
 -------------------------
 
-Sure, you don't have to rewrite your code-base which is using `rainicorn` if you
-want to get rid of the colorful outputs. You only have to define the `MONOCORN`
-preprocessor variable, either by passing it with the `D` flag to the compiler:
+Of course, if you want to get rid of all the fine, and joyful colors, you don't
+have to rewrite your code-base which is using `rainicorn`! All you have to do is
+define the `RC_MONOCORN` preprocessor variable, either by passing it with the
+`D` flag to your C compiler:
 
 ```
--DMONOCORN
+-DRC_MONOCORN
 ```
 
-or by defining it before the includes of the header (for local switching):
+or by defining it before the includes of the headers:
 
 ```C
-#define MONOCORN
-#include "rainicorn"
+#define MC_MONOCORN
+#include <rainicorn/rainicorn.h>
 ```
 
+
+
+License
+-------
+
+Copyright &copy; 2015 - 2016 Peter Varo
+&lt;[http://github.com/petervaro/rainicorn](http://github.com/petervaro/rainicorn)&gt;
+
+This program is free software: you can redistribute it
+and/or modify it under the terms of the GNU General
+Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program, most likely a file in
+the root directory, called "LICENSE". If not, see
+&lt;[http://www.gnu.org/licenses](http://www.gnu.org/licenses)&gt;.
 
 ---
 

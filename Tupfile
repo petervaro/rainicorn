@@ -1,0 +1,53 @@
+## INFO ##
+## INFO ##
+
+# Include Tuprules.tup
+include_rules
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+CPPPATH += -Iinclude
+
+
+#------------------------------------------------------------------------------#
+# Build binary with color output
+: tests/test.c                                                                 \
+    |> !to_obj $(CPPPATH)                                                      \
+    |> $(BUILD_DIR)/color/%B.o {color}
+: {color}                                                                      \
+    |> !to_bin                                                                 \
+    |> $(BINARY_DIR)/color {color_bin}
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+# Build binary with monochrome output
+: tests/test.c                                                                 \
+    |> !to_obj $(CPPPATH) -DRC_MONOCORN                                        \
+    |> $(BUILD_DIR)/mono/%B.o {mono}
+: {mono}                                                                       \
+    |> !to_bin $(CPPPATH)                                                      \
+    |> $(BINARY_DIR)/mono {mono_bin}
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+# Build binary from the snippets of the document
+: tests/doc.c                                                                  \
+    |> !to_obj $(CPPPATH)                                                      \
+    |> $(BUILD_DIR)/doc/%B.o {doc}
+: {doc}                                                                        \
+    |> !to_bin $(CPPPATH)                                                      \
+    |> $(BINARY_DIR)/doc {doc_bin}
+
+
+#------------------------------------------------------------------------------#
+# Run tests
+!run = |> ^ TEST: %f^ ./%f |>
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+# Run monochrome test
+: {mono_bin} | {color_bin} |> !run |>
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+# Run colorized test
+: {color_bin} | {mono_bin} |> !run |>
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+# Run examples in the document
+: {doc_bin} |> !run |>

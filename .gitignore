@@ -1,3 +1,4 @@
+# Extensions
 *.DS_Store
 *.pyc
 *.pyo
@@ -6,14 +7,12 @@
 *.so
 *.o
 
-.sconsign.dblite
+# Hidden folders
+.tup
 
-.ccom_cache
-.clic_cache
-.cdoc_cache
+# Folders
+bin
+build
 
-.ccom_todo
-.cdoc_toc
-
-test
+# Files
 README.html
